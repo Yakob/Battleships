@@ -9,7 +9,6 @@
 #define SEA_SIZE 10
 #define TURN_SPEED 4.0f
 #define MOVE_SPEED 0.2f
-#define PI 3.141459f
 
 Engine::Engine() {
     timer = new QTimer(this);
@@ -61,12 +60,14 @@ void Engine::paintGL() {
 
     glPushMatrix();
     glTranslatef(player1.xPos, 0, player1.zPos);
+    player1.drawHitBox();
     glRotatef(player1.yAngle, 0, 1, 0);
     player1.draw();
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef(player2.xPos, 0, player2.zPos);
+    player2.drawHitBox();
     glRotatef(player2.yAngle, 0, 1, 0);
     player2.draw();
     glPopMatrix();
@@ -79,7 +80,12 @@ void Engine::update() {
         if(player1.backwardKeyPressed) moveBackward(&player1);
         if(player1.rightdKeyPressed) turnRight(&player1);
         if(player1.leftKeyPressed) turnLeft(&player1);
+        if(player2.forwardKeyPressed) moveForward(&player2);
+        if(player2.backwardKeyPressed) moveBackward(&player2);
+        if(player2.rightdKeyPressed) turnRight(&player2);
+        if(player2.leftKeyPressed) turnLeft(&player2);
     }
+    player1.updateHitbox();
     this->updateGL();
 }
 
@@ -87,36 +93,41 @@ void Engine::resetGame() {
     player1.yAngle = 0.0;
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
+    player1.updateHitbox();
 
-    player2.yAngle = 0.0;
+    player2.yAngle = 225.0;
     player2.xPos = -SEA_SIZE + 3.0f;
     player2.zPos = -SEA_SIZE + 3.0f;
+    player2.updateHitbox();
+}
+
+void Engine::checkCollisionShipMap(Ship *player) {
+
 }
 
 void Engine::turnLeft(Ship *player) {
-    player->yAngle -= TURN_SPEED;
-    if (player->yAngle < 0.0) player->yAngle += 360.0;
+    player->yAngle += TURN_SPEED;
+    if (player->yAngle < 0.0) player->yAngle -= 360.0;
 }
 
 void Engine::turnRight(Ship *player) {
-    player->yAngle += TURN_SPEED;
-    if (player->yAngle > 360.0) player->yAngle -= 360.0;
+    player->yAngle -= TURN_SPEED;
+    if (player->yAngle > 360.0) player->yAngle += 360.0;
 }
 
 void Engine::moveForward(Ship *player) {
-    double radians = PI / 180 * player->yAngle;
-    player->xPos -= sin(radians) * MOVE_SPEED;
-    player->zPos += cos(radians) * MOVE_SPEED;
+    player->xPos -= sin(player->yRadians()) * MOVE_SPEED;
+    player->zPos -= cos(player->yRadians()) * MOVE_SPEED;
 }
 
 void Engine::moveBackward(Ship *player) {
-    double radians = PI / 180 * player->yAngle;
-    player->xPos += sin(radians) * MOVE_SPEED;
-    player->zPos -= cos(radians) * MOVE_SPEED;
+    player->xPos += sin(player->yRadians()) * MOVE_SPEED;
+    player->zPos += cos(player->yRadians()) * MOVE_SPEED;
 }
 
 void Engine::keyPressEvent(QKeyEvent *event) {
     switch(event ->key()) {
+    //game
     case Qt::Key_Escape:
         close();
         break;
@@ -126,6 +137,7 @@ void Engine::keyPressEvent(QKeyEvent *event) {
     case Qt::Key_N:
         resetGame();
         break;
+    //camera
     case Qt::Key_2:
         xAngle -= 1;
         break;
@@ -144,6 +156,7 @@ void Engine::keyPressEvent(QKeyEvent *event) {
     case Qt::Key_Minus:
         scale -= 0.1f;
         break;
+    //player 1
     case Qt::Key_A:
         player1.leftKeyPressed = true;
         break;
@@ -155,6 +168,19 @@ void Engine::keyPressEvent(QKeyEvent *event) {
         break;
     case Qt::Key_S:
         player1.backwardKeyPressed = true;
+        break;
+    //player 2
+    case Qt::Key_Left:
+        player2.leftKeyPressed = true;
+        break;
+    case Qt::Key_Right:
+        player2.rightdKeyPressed = true;
+        break;
+    case Qt::Key_Up:
+        player2.forwardKeyPressed = true;
+        break;
+    case Qt::Key_Down:
+        player2.backwardKeyPressed = true;
         break;
     }
 }
@@ -172,6 +198,18 @@ void Engine::keyReleaseEvent(QKeyEvent *event) {
         break;
     case Qt::Key_S:
         player1.backwardKeyPressed = false;
+        break;
+    case Qt::Key_Left:
+        player2.leftKeyPressed = false;
+        break;
+    case Qt::Key_Right:
+        player2.rightdKeyPressed = false;
+        break;
+    case Qt::Key_Up:
+        player2.forwardKeyPressed = false;
+        break;
+    case Qt::Key_Down:
+        player2.backwardKeyPressed = false;
         break;
     }
 }

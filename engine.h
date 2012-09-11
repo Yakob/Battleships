@@ -39,6 +39,8 @@ private:
     void turnRight(Ship *player);
     void moveForward(Ship *player);
     void moveBackward(Ship *player);
+
+    void checkCollisionShipMap(Ship *player);
 };
 
 #endif // ENGINE_H

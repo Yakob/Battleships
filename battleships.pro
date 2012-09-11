@@ -14,9 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
            engine.cpp \
-    ship.cpp
+    ship.cpp \
+    point2D.cpp
 
 HEADERS  += engine.h \
-    ship.h
+    ship.h \
+    point2D.h
 
 LIBS += -lGLU

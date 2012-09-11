@@ -85,7 +85,11 @@ void Engine::update() {
         if(player2.rightdKeyPressed) turnRight(&player2);
         if(player2.leftKeyPressed) turnLeft(&player2);
     }
-    player1.updateHitbox();
+
+    if(player1.forwardKeyPressed || player1.backwardKeyPressed ||
+            player1.rightdKeyPressed || player1.leftKeyPressed)
+    {player1.updateHitbox();}
+
     this->updateGL();
 }
 

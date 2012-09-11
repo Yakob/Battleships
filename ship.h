@@ -34,5 +34,7 @@ private:
     Point2D topLeft;
     Point2D bottomRight;
     Point2D bottomLeft;
+
+    void rotate(Point2D *point);
 };
 #endif // SHIP_H

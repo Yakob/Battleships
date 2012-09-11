@@ -12,6 +12,11 @@ Ship::Ship() {
     rightdKeyPressed = false;
     leftKeyPressed = false;
     mapCollision = false;
+
+    topRight.set(1,-1);
+    topLeft.set(-1,-1);
+    bottomLeft.set(-1,1);
+    bottomRight.set(1,1);
 }
 
 Ship::~Ship() {}
@@ -20,8 +25,15 @@ double Ship::yRadians() {
     return PI / 180 * yAngle;
 }
 
+void Ship::rotate(Point2D *point) {
+    float oldX = point->x;
+    float oldY = point->y;
+    point->set(oldX * cos(yRadians()) - oldY * sin(yRadians()),
+               oldX * sin(yRadians()) + oldY * cos(yRadians()));
+}
+
 void Ship::updateHitbox() {
-    topRight.set(sin(yRadians())-0.5, cos(yRadians())-0.5);
+    rotate(&topRight);
     topLeft.set(-1,-1);
     bottomLeft.set(-1,1);
     bottomRight.set(1,1);

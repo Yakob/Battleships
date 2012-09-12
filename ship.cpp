@@ -2,6 +2,7 @@
 
 #include <ship.h>
 #include <math.h>
+#include <QDebug>
 
 #define PI 3.141459f
 
@@ -17,10 +18,10 @@ Ship::Ship() {
     defaultBottomLeft.set(-0.6f,0.6f);
     defaultBottomRight.set(0.6f,0.6f);
 
-    hitboxCorners[0] = topRight;
-    hitboxCorners[1] = topLeft;
-    hitboxCorners[2] = bottomRight;
-    hitboxCorners[3] = bottomLeft;
+    hitBoxCorners[0] = &topRight;
+    hitBoxCorners[1] = &topLeft;
+    hitBoxCorners[2] = &bottomRight;
+    hitBoxCorners[3] = &bottomLeft;
 }
 
 Ship::~Ship() {}
@@ -49,11 +50,11 @@ void Ship::updateHitbox() {
     hitboxMaxX = hitboxMinX = topRight.x;
     hitboxMaxZ = hitboxMinZ = topRight.y;
 
-    for(int i = 0; i < 4; i++) {
-        if(hitboxCorners[i].x > hitboxMaxX) hitboxMaxX = hitboxCorners[i].x;
-        if(hitboxCorners[i].x < hitboxMinX) hitboxMinX = hitboxCorners[i].x;
-        if(hitboxCorners[i].y > hitboxMaxZ) hitboxMaxZ = hitboxCorners[i].y;
-        if(hitboxCorners[i].y < hitboxMinZ) hitboxMinZ = hitboxCorners[i].y;
+    for(int i = 1; i < 4; i++) {
+        hitboxMaxX = (hitBoxCorners[i]->x>hitboxMaxX) ? hitBoxCorners[i]->x : hitboxMaxX;
+        hitboxMinX = (hitBoxCorners[i]->x<hitboxMinX) ? hitBoxCorners[i]->x : hitboxMinX;
+        hitboxMaxZ = (hitBoxCorners[i]->y>hitboxMaxZ) ? hitBoxCorners[i]->y : hitboxMaxZ;
+        hitboxMinZ = (hitBoxCorners[i]->y<hitboxMinZ) ? hitBoxCorners[i]->y : hitboxMinZ;
     }
 }
 

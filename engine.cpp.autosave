@@ -32,6 +32,8 @@ void Engine::initializeGL() {
     yAngle = 0;
     scale = 1.0f;
     gamePause = false;
+    collisonPlayers = false;
+    shipsMovment = false;
     resetGame();
 }
 
@@ -94,6 +96,7 @@ void Engine::update() {
             player1.rightdKeyPressed || player1.leftKeyPressed) {
         player1.updateVaribles();
         player1.updateHitbox();
+        shipsMovment = true;
         checkCollisionShipMap(&player1);
         if(player1.mapCollision) {
             player1 = player1_old;
@@ -105,11 +108,16 @@ void Engine::update() {
             player2.rightdKeyPressed || player2.leftKeyPressed) {
         player2.updateVaribles();
         player2.updateHitbox();
+        shipsMovment = true;
         checkCollisionShipMap(&player2);
         if(player2.mapCollision) {
             player2 = player2_old;
             player2.mapCollision = false;
         }
+    }
+
+    if(shipsMovment) {
+        if()
     }
 
     //For debug purposes

@@ -46,7 +46,7 @@ private:
     Point2D defaultBottomRight;
     Point2D defaultBottomLeft;
 
-    Point2D hitboxCorners[4];
+    Point2D *hitBoxCorners[4];
 
     Point2D updatePoint(Point2D *defaultPoint);
 };

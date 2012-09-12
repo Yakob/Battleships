@@ -31,6 +31,8 @@ private:
     float scale;
     Ship player1;
     Ship player2;
+    Ship player1_old;
+    Ship player2_old;
     bool gamePause;
 
     void resetGame();

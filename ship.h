@@ -15,6 +15,16 @@ public:
     float yAngle;
     float xPos;
     float zPos;
+    double yRadian;
+    float cosRad;
+    float sinRad;
+    float cosMrad;
+    float sinMrad;
+
+    float hitboxMaxX;
+    float hitboxMinX;
+    float hitboxMaxZ;
+    float hitboxMinZ;
 
     bool mapCollision;
     bool forwardKeyPressed;
@@ -22,19 +32,22 @@ public:
     bool rightdKeyPressed;
     bool leftKeyPressed;
 
-    double yRadians();
-    void updateHitbox();
-    float getMaxTop();
-    float getMaxBottom();
-    float getMaxRight();
-    float getMaxLeft();
-
-private:
     Point2D topRight;
     Point2D topLeft;
     Point2D bottomRight;
     Point2D bottomLeft;
 
-    void rotate(Point2D *point);
+    void updateVaribles();
+    void updateHitbox();
+
+private:
+    Point2D defaultTopRight;
+    Point2D defaultTopLeft;
+    Point2D defaultBottomRight;
+    Point2D defaultBottomLeft;
+
+    Point2D hitboxCorners[4];
+
+    Point2D updatePoint(Point2D *defaultPoint);
 };
 #endif // SHIP_H

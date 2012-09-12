@@ -3,6 +3,7 @@
 #include "GL/gl.h"
 #include "GL/glu.h"
 #include <math.h>
+#include <QDebug>
 
 #include <engine.h>
 
@@ -59,21 +60,24 @@ void Engine::paintGL() {
     drawSea(SEA_SIZE);
 
     glPushMatrix();
-    glTranslatef(player1.xPos, 0, player1.zPos);
     player1.drawHitBox();
+    glTranslatef(player1.xPos, 0, player1.zPos);
     glRotatef(player1.yAngle, 0, 1, 0);
     player1.draw();
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(player2.xPos, 0, player2.zPos);
     player2.drawHitBox();
+    glTranslatef(player2.xPos, 0, player2.zPos);
     glRotatef(player2.yAngle, 0, 1, 0);
     player2.draw();
     glPopMatrix();
 }
 
 void Engine::update() {
+    player1_old = player1;
+    player2_old = player2;
+
     if(!gamePause)
     {
         if(player1.forwardKeyPressed) moveForward(&player1);
@@ -87,8 +91,32 @@ void Engine::update() {
     }
 
     if(player1.forwardKeyPressed || player1.backwardKeyPressed ||
-            player1.rightdKeyPressed || player1.leftKeyPressed)
-    {player1.updateHitbox();}
+            player1.rightdKeyPressed || player1.leftKeyPressed) {
+        player1.updateVaribles();
+        player1.updateHitbox();
+        checkCollisionShipMap(&player1);
+        if(player1.mapCollision) {
+            player1 = player1_old;
+            player1.mapCollision = false;
+        }
+    }
+
+    //For debug purposes
+    qDebug() << "Player 1";
+    qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
+    qDebug() << "maxX" << player1.hitboxMaxX << "|minX" << player1.hitboxMinX <<
+                "|maxZ" << player1.hitboxMaxZ << "|minZ" << player1.hitboxMinZ;
+    qDebug() << "tr" << player1.topRight.x << player1.topRight.y <<
+                "|tl" << player1.topLeft.x << player1.topLeft.y <<
+                "|br" << player1.bottomRight.x << player1.bottomRight.y <<
+                "|bl" << player1.bottomLeft.x << player1.bottomLeft.y;
+    qDebug() << "";
+    qDebug() << "";
+    qDebug() << "Player 2";
+    qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
+    qDebug() << "";
+    qDebug() << "";
+    qDebug() << "";
 
     this->updateGL();
 }
@@ -97,36 +125,40 @@ void Engine::resetGame() {
     player1.yAngle = 0.0;
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
+    player1.updateVaribles();
     player1.updateHitbox();
 
     player2.yAngle = 225.0;
     player2.xPos = -SEA_SIZE + 3.0f;
     player2.zPos = -SEA_SIZE + 3.0f;
+    player2.updateVaribles();
     player2.updateHitbox();
 }
 
 void Engine::checkCollisionShipMap(Ship *player) {
-
+    if(player->hitboxMaxX > SEA_SIZE || player->hitboxMinX < -SEA_SIZE ||
+       player->hitboxMaxZ > SEA_SIZE || player->hitboxMinZ < -SEA_SIZE)
+        player->mapCollision = true;
 }
 
 void Engine::turnLeft(Ship *player) {
     player->yAngle += TURN_SPEED;
-    if (player->yAngle < 0.0) player->yAngle -= 360.0;
+    if (player->yAngle > 360.0f) player->yAngle -= 360.0f;
 }
 
 void Engine::turnRight(Ship *player) {
     player->yAngle -= TURN_SPEED;
-    if (player->yAngle > 360.0) player->yAngle += 360.0;
+    if (player->yAngle < 0.0f) player->yAngle += 360.0f;
 }
 
 void Engine::moveForward(Ship *player) {
-    player->xPos -= sin(player->yRadians()) * MOVE_SPEED;
-    player->zPos -= cos(player->yRadians()) * MOVE_SPEED;
+    player->xPos -= player->sinRad * MOVE_SPEED;
+    player->zPos -= player->cosRad * MOVE_SPEED;
 }
 
 void Engine::moveBackward(Ship *player) {
-    player->xPos += sin(player->yRadians()) * MOVE_SPEED;
-    player->zPos += cos(player->yRadians()) * MOVE_SPEED;
+    player->xPos += player->sinRad * MOVE_SPEED;
+    player->zPos += player->cosRad * MOVE_SPEED;
 }
 
 void Engine::keyPressEvent(QKeyEvent *event) {

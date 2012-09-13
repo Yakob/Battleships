@@ -26,7 +26,8 @@ Ship::Ship() {
 Ship::~Ship() {}
 
 void Ship::updateVaribles() {
-    yRadian = PI / 180 * yAngle;
+    yRadian = utils.getRadian(yAngle);
+    yMinusRadian = utils.getRadian(-yAngle);
     sinRad = sin(yRadian);
     cosRad = cos(yRadian);
     sinMrad = sin(-yRadian);
@@ -41,10 +42,10 @@ Point2D Ship::updatePoint(Point2D *defaultPoint) {
 }
 
 void Ship::updateHitbox() {
-    topRight = updatePoint(&defaultTopRight);
-    topLeft = updatePoint(&defaultTopLeft);
-    bottomLeft = updatePoint(&defaultBottomLeft);
-    bottomRight = updatePoint(&defaultBottomRight);
+    topRight = utils.rotateAndTranslatePoint(&defaultTopRight, yMinusRadian, xPos, zPos);
+    topLeft = utils.rotateAndTranslatePoint(&defaultTopLeft, yMinusRadian, xPos, zPos);
+    bottomLeft = utils.rotateAndTranslatePoint(&defaultBottomLeft, yMinusRadian, xPos, zPos);
+    bottomRight = utils.rotateAndTranslatePoint(&defaultBottomRight, yMinusRadian, xPos, zPos);
 
     hitboxMaxX = hitboxMinX = topRight.x;
     hitboxMaxZ = hitboxMinZ = topRight.y;

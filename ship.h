@@ -2,6 +2,7 @@
 #define SHIP_H
 
 #include <point2D.h>
+#include <utils.h>
 
 class Ship
 {
@@ -16,6 +17,7 @@ public:
     float xPos;
     float zPos;
     double yRadian;
+    double yMinusRadian;
     float cosRad;
     float sinRad;
     float cosMrad;
@@ -36,17 +38,17 @@ public:
     Point2D bottomRight;
     Point2D bottomLeft;
 
-    void updateVaribles();
-    void updateHitbox();
-
-private:
     Point2D defaultTopRight;
     Point2D defaultTopLeft;
     Point2D defaultBottomRight;
     Point2D defaultBottomLeft;
 
-    Point2D *hitBoxCorners[4];
+    void updateVaribles();
+    void updateHitbox();
 
+private:
+    Point2D *hitBoxCorners[4];
     Point2D updatePoint(Point2D *defaultPoint);
+    Utils utils;
 };
 #endif // SHIP_H

@@ -116,7 +116,7 @@ void Engine::update() {
     }
 
     if(playersMovment) {
-        if(checkPlayersNear()) {
+        if(checkPlayersNear() && checkCollisionShipShip()) {
             player1 = player1_old;
             player2 = player2_old;
         }
@@ -170,6 +170,10 @@ bool Engine::checkCollisionShipMap(Ship *player) {
 bool Engine::checkPlayersNear() {
     return (sqrt(pow((player1.xPos - player2.xPos), 2) + pow((player1.zPos - player2.zPos), 2)) < NEAR)
             ? true : false;
+}
+
+bool Engine::checkCollisionShipShip() {
+    return false;
 }
 
 void Engine::turnLeft(Ship *player) {

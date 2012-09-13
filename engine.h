@@ -34,6 +34,7 @@ private:
     Ship player1_old;
     Ship player2_old;
     bool gamePause;
+    bool playersMovment;
 
     void resetGame();
     void drawSea(int size);
@@ -42,7 +43,9 @@ private:
     void moveForward(Ship *player);
     void moveBackward(Ship *player);
 
-    void checkCollisionShipMap(Ship *player);
+    bool checkCollisionShipMap(Ship *player);
+    bool checkPlayersNear();
+    bool checkCollisionShipShip();
 };
 
 #endif // ENGINE_H

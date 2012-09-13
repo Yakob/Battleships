@@ -11,7 +11,6 @@ Ship::Ship() {
     backwardKeyPressed = false;
     rightdKeyPressed = false;
     leftKeyPressed = false;
-    mapCollision = false;
 
     defaultTopRight.set(0.6f,-0.6f);
     defaultTopLeft.set(-0.6f,-0.6f);

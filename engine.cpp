@@ -10,6 +10,7 @@
 #define SEA_SIZE 10
 #define TURN_SPEED 4.0f
 #define MOVE_SPEED 0.2f
+#define NEAR 2.0f
 
 Engine::Engine() {
     timer = new QTimer(this);
@@ -32,6 +33,7 @@ void Engine::initializeGL() {
     yAngle = 0;
     scale = 1.0f;
     gamePause = false;
+    playersMovment = false;
     resetGame();
 }
 
@@ -72,6 +74,13 @@ void Engine::paintGL() {
     glRotatef(player2.yAngle, 0, 1, 0);
     player2.draw();
     glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(5, 0, 0);
+    player1.draw();
+    glTranslatef(player2.xPos - player1.xPos, 0, player2.zPos - player1.zPos);
+    glRotatef(player2.yAngle - player1.yAngle, 0, 1, 0);
+    player2.draw();
 }
 
 void Engine::update() {
@@ -94,22 +103,24 @@ void Engine::update() {
             player1.rightdKeyPressed || player1.leftKeyPressed) {
         player1.updateVaribles();
         player1.updateHitbox();
-        checkCollisionShipMap(&player1);
-        if(player1.mapCollision) {
-            player1 = player1_old;
-            player1.mapCollision = false;
-        }
+        playersMovment = true;
+        if(checkCollisionShipMap(&player1)) player1 = player1_old;
     }
 
     if(player2.forwardKeyPressed || player2.backwardKeyPressed ||
             player2.rightdKeyPressed || player2.leftKeyPressed) {
         player2.updateVaribles();
         player2.updateHitbox();
-        checkCollisionShipMap(&player2);
-        if(player2.mapCollision) {
+        playersMovment = true;
+        if(checkCollisionShipMap(&player2)) player2 = player2_old;
+    }
+
+    if(playersMovment) {
+        if(checkPlayersNear()) {
+            player1 = player1_old;
             player2 = player2_old;
-            player2.mapCollision = false;
         }
+        playersMovment = false;
     }
 
     //For debug purposes
@@ -122,12 +133,16 @@ void Engine::update() {
                 "|br" << player1.bottomRight.x << player1.bottomRight.y <<
                 "|bl" << player1.bottomLeft.x << player1.bottomLeft.y;
     qDebug() << "";
-    qDebug() << "";
     qDebug() << "Player 2";
     qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
+    qDebug() << "maxX" << player2.hitboxMaxX << "|minX" << player2.hitboxMinX <<
+                "|maxZ" << player2.hitboxMaxZ << "|minZ" << player2.hitboxMinZ;
+    qDebug() << "tr" << player2.topRight.x << player2.topRight.y <<
+                "|tl" << player2.topLeft.x << player2.topLeft.y <<
+                "|br" << player2.bottomRight.x << player2.bottomRight.y <<
+                "|bl" << player2.bottomLeft.x << player2.bottomLeft.y;
     qDebug() << "";
-    qDebug() << "";
-    qDebug() << "";
+    qDebug() <<"playersNear" << checkPlayersNear();
 
     this->updateGL();
 }
@@ -146,10 +161,15 @@ void Engine::resetGame() {
     player2.updateHitbox();
 }
 
-void Engine::checkCollisionShipMap(Ship *player) {
-    if(player->hitboxMaxX > SEA_SIZE || player->hitboxMinX < -SEA_SIZE ||
-       player->hitboxMaxZ > SEA_SIZE || player->hitboxMinZ < -SEA_SIZE)
-        player->mapCollision = true;
+bool Engine::checkCollisionShipMap(Ship *player) {
+    return (player->hitboxMaxX > SEA_SIZE || player->hitboxMinX < -SEA_SIZE ||
+            player->hitboxMaxZ > SEA_SIZE || player->hitboxMinZ < -SEA_SIZE)
+            ? true : false;
+}
+
+bool Engine::checkPlayersNear() {
+    return (sqrt(pow((player1.xPos - player2.xPos), 2) + pow((player1.zPos - player2.zPos), 2)) < NEAR)
+            ? true : false;
 }
 
 void Engine::turnLeft(Ship *player) {

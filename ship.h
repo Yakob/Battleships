@@ -26,7 +26,6 @@ public:
     float hitboxMaxZ;
     float hitboxMinZ;
 
-    bool mapCollision;
     bool forwardKeyPressed;
     bool backwardKeyPressed;
     bool rightdKeyPressed;

@@ -21,6 +21,18 @@ Ship::Ship() {
     hitBoxCorners[1] = &topLeft;
     hitBoxCorners[2] = &bottomRight;
     hitBoxCorners[3] = &bottomLeft;
+
+    defaultHitBox[0] = &defaultTopRight;
+    defaultHitBox[1] = &defaultTopLeft;
+    defaultHitBox[2] = &defaultBottomRight;
+    defaultHitBox[3] = &defaultBottomLeft;
+
+    limits[0] = hitboxMinX;
+    limits[1] = hitboxMaxX;
+    limits[2] = hitboxMinZ;
+    limits[3] = hitboxMaxZ;
+
+    updateVaribles();
 }
 
 Ship::~Ship() {}
@@ -32,30 +44,8 @@ void Ship::updateVaribles() {
     cosRad = cos(yRadian);
     sinMrad = sin(-yRadian);
     cosMrad = cos(-yRadian);
-}
-
-Point2D Ship::updatePoint(Point2D *defaultPoint) {
-    Point2D tempPoint;
-    tempPoint.set(defaultPoint->x * cosMrad - defaultPoint->y * sinMrad + xPos,
-                  defaultPoint->x * sinMrad + defaultPoint->y * cosMrad + zPos);
-    return tempPoint;
-}
-
-void Ship::updateHitbox() {
-    topRight = utils.rotateAndTranslatePoint(&defaultTopRight, yMinusRadian, xPos, zPos);
-    topLeft = utils.rotateAndTranslatePoint(&defaultTopLeft, yMinusRadian, xPos, zPos);
-    bottomLeft = utils.rotateAndTranslatePoint(&defaultBottomLeft, yMinusRadian, xPos, zPos);
-    bottomRight = utils.rotateAndTranslatePoint(&defaultBottomRight, yMinusRadian, xPos, zPos);
-
-    hitboxMaxX = hitboxMinX = topRight.x;
-    hitboxMaxZ = hitboxMinZ = topRight.y;
-
-    for(int i = 1; i < 4; i++) {
-        hitboxMaxX = (hitBoxCorners[i]->x>hitboxMaxX) ? hitBoxCorners[i]->x : hitboxMaxX;
-        hitboxMinX = (hitBoxCorners[i]->x<hitboxMinX) ? hitBoxCorners[i]->x : hitboxMinX;
-        hitboxMaxZ = (hitBoxCorners[i]->y>hitboxMaxZ) ? hitBoxCorners[i]->y : hitboxMaxZ;
-        hitboxMinZ = (hitBoxCorners[i]->y<hitboxMinZ) ? hitBoxCorners[i]->y : hitboxMinZ;
-    }
+    utils.rotateAndTranslateHitBox(defaultHitBox, hitBoxCorners, yMinusRadian, xPos, zPos);
+    utils.getLimits(hitBoxCorners, limits);
 }
 
 void Ship::drawHitBox() {

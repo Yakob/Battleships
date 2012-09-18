@@ -102,7 +102,6 @@ void Engine::update() {
     if(player1.forwardKeyPressed || player1.backwardKeyPressed ||
             player1.rightdKeyPressed || player1.leftKeyPressed) {
         player1.updateVaribles();
-        player1.updateHitbox();
         playersMovment = true;
         if(checkCollisionShipMap(&player1)) player1 = player1_old;
     }
@@ -110,7 +109,6 @@ void Engine::update() {
     if(player2.forwardKeyPressed || player2.backwardKeyPressed ||
             player2.rightdKeyPressed || player2.leftKeyPressed) {
         player2.updateVaribles();
-        player2.updateHitbox();
         playersMovment = true;
         if(checkCollisionShipMap(&player2)) player2 = player2_old;
     }
@@ -126,21 +124,21 @@ void Engine::update() {
     //For debug purposes
     qDebug() << "Player 1";
     qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
-    qDebug() << "maxX" << player1.hitboxMaxX << "|minX" << player1.hitboxMinX <<
-                "|maxZ" << player1.hitboxMaxZ << "|minZ" << player1.hitboxMinZ;
-    qDebug() << "tr" << player1.topRight.x << player1.topRight.y <<
-                "|tl" << player1.topLeft.x << player1.topLeft.y <<
-                "|br" << player1.bottomRight.x << player1.bottomRight.y <<
-                "|bl" << player1.bottomLeft.x << player1.bottomLeft.y;
+    qDebug() << "maxX" << player1.limits[1] << "|minX" << player1.limits[0] <<
+                "|maxZ" << player1.limits[3] << "|minZ" << player1.limits[2];
+    qDebug() << "tr" << player1.hitBoxCorners[0]->x << player1.hitBoxCorners[0]->y <<
+                "|tl" << player1.hitBoxCorners[1]->x << player1.hitBoxCorners[1]->y <<
+                "|br" << player1.hitBoxCorners[2]->x << player1.hitBoxCorners[2]->y <<
+                "|bl" << player1.hitBoxCorners[3]->x << player1.hitBoxCorners[2]->y;
     qDebug() << "";
     qDebug() << "Player 2";
     qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
-    qDebug() << "maxX" << player2.hitboxMaxX << "|minX" << player2.hitboxMinX <<
-                "|maxZ" << player2.hitboxMaxZ << "|minZ" << player2.hitboxMinZ;
-    qDebug() << "tr" << player2.topRight.x << player2.topRight.y <<
-                "|tl" << player2.topLeft.x << player2.topLeft.y <<
-                "|br" << player2.bottomRight.x << player2.bottomRight.y <<
-                "|bl" << player2.bottomLeft.x << player2.bottomLeft.y;
+    qDebug() << "maxX" << player2.limits[1] << "|minX" << player2.limits[0] <<
+                "|maxZ" << player2.limits[3] << "|minZ" << player2.limits[2];
+    qDebug() << "tr" << player2.hitBoxCorners[0]->x << player2.hitBoxCorners[0]->y <<
+                "|tl" << player2.hitBoxCorners[1]->x << player2.hitBoxCorners[1]->y <<
+                "|br" << player2.hitBoxCorners[2]->x << player2.hitBoxCorners[2]->y <<
+                "|bl" << player2.hitBoxCorners[3]->x << player2.hitBoxCorners[2]->y;
     qDebug() << "";
     qDebug() <<"playersNear" << checkPlayersNear();
 
@@ -152,18 +150,16 @@ void Engine::resetGame() {
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
     player1.updateVaribles();
-    player1.updateHitbox();
 
     player2.yAngle = 225.0;
     player2.xPos = -SEA_SIZE + 3.0f;
     player2.zPos = -SEA_SIZE + 3.0f;
     player2.updateVaribles();
-    player2.updateHitbox();
 }
 
 bool Engine::checkCollisionShipMap(Ship *player) {
-    return (player->hitboxMaxX > SEA_SIZE || player->hitboxMinX < -SEA_SIZE ||
-            player->hitboxMaxZ > SEA_SIZE || player->hitboxMinZ < -SEA_SIZE)
+    return (player->limits[1] > SEA_SIZE || player->limits[0] < -SEA_SIZE ||
+            player->limits[3] > SEA_SIZE || player->limits[2] < -SEA_SIZE)
             ? true : false;
 }
 
@@ -173,6 +169,19 @@ bool Engine::checkPlayersNear() {
 }
 
 bool Engine::checkCollisionShipShip() {
+//    Sp1 = player1;
+//    p2 = player2;
+
+//    p2.xPos -= p1.xPos;
+//    p2.zPos -= p1.zPos;
+//    p2.yAngle -= p1.yAngle;
+//    p2.updateVaribles();
+
+//    p1.xPos = 0;
+//    p1.zPos = 0;
+//    p1.yAngle = 0;
+//    p1.updateVaribles();
+
     return false;
 }
 

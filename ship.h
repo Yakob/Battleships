@@ -13,6 +13,10 @@ public:
     void draw();
     void drawHitBox();
 
+    Point2D *hitBoxCorners[4];
+    Point2D *defaultHitBox[4];
+    float limits[4];
+
     float yAngle;
     float xPos;
     float zPos;
@@ -23,15 +27,20 @@ public:
     float cosMrad;
     float sinMrad;
 
-    float hitboxMaxX;
-    float hitboxMinX;
-    float hitboxMaxZ;
-    float hitboxMinZ;
-
     bool forwardKeyPressed;
     bool backwardKeyPressed;
     bool rightdKeyPressed;
     bool leftKeyPressed;
+
+    void updateVaribles();
+
+private:
+    Utils utils;
+
+    float hitboxMaxX;
+    float hitboxMinX;
+    float hitboxMaxZ;
+    float hitboxMinZ;
 
     Point2D topRight;
     Point2D topLeft;
@@ -42,13 +51,5 @@ public:
     Point2D defaultTopLeft;
     Point2D defaultBottomRight;
     Point2D defaultBottomLeft;
-
-    void updateVaribles();
-    void updateHitbox();
-
-private:
-    Point2D *hitBoxCorners[4];
-    Point2D updatePoint(Point2D *defaultPoint);
-    Utils utils;
 };
 #endif // SHIP_H

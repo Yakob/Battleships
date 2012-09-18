@@ -26,6 +26,7 @@ protected:
 
 private:
     QTimer *timer;
+    Utils utils;
     int xAngle;
     int yAngle;
     float scale;

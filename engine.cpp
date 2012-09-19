@@ -62,21 +62,18 @@ void Engine::paintGL() {
     drawSea(SEA_SIZE);
 
     glPushMatrix();
-    player1.drawHitBox();
     glTranslatef(player1.xPos, 0, player1.zPos);
     glRotatef(player1.yAngle, 0, 1, 0);
     player1.draw();
     glPopMatrix();
 
     glPushMatrix();
-    player2.drawHitBox();
     glTranslatef(player2.xPos, 0, player2.zPos);
     glRotatef(player2.yAngle, 0, 1, 0);
     player2.draw();
     glPopMatrix();
 
-    glPushMatrix();
-    glTranslatef(5, 0, 0);
+    glTranslatef(0, 0, 2);
     player1.draw();
     glTranslatef(player2.xPos - player1.xPos, 0, player2.zPos - player1.zPos);
     glRotatef(player2.yAngle - player1.yAngle, 0, 1, 0);
@@ -126,19 +123,19 @@ void Engine::update() {
     qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
     qDebug() << "maxX" << player1.limits[1] << "|minX" << player1.limits[0] <<
                 "|maxZ" << player1.limits[3] << "|minZ" << player1.limits[2];
-    qDebug() << "tr" << player1.hitBoxCorners[0]->x << player1.hitBoxCorners[0]->y <<
-                "|tl" << player1.hitBoxCorners[1]->x << player1.hitBoxCorners[1]->y <<
-                "|br" << player1.hitBoxCorners[2]->x << player1.hitBoxCorners[2]->y <<
-                "|bl" << player1.hitBoxCorners[3]->x << player1.hitBoxCorners[2]->y;
+    qDebug() << "tr" << player1.hitBoxCorners[0].x << player1.hitBoxCorners[0].y <<
+                "|tl" << player1.hitBoxCorners[1].x << player1.hitBoxCorners[1].y <<
+                "|br" << player1.hitBoxCorners[2].x << player1.hitBoxCorners[2].y <<
+                "|bl" << player1.hitBoxCorners[3].x << player1.hitBoxCorners[2].y;
     qDebug() << "";
     qDebug() << "Player 2";
     qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
     qDebug() << "maxX" << player2.limits[1] << "|minX" << player2.limits[0] <<
                 "|maxZ" << player2.limits[3] << "|minZ" << player2.limits[2];
-    qDebug() << "tr" << player2.hitBoxCorners[0]->x << player2.hitBoxCorners[0]->y <<
-                "|tl" << player2.hitBoxCorners[1]->x << player2.hitBoxCorners[1]->y <<
-                "|br" << player2.hitBoxCorners[2]->x << player2.hitBoxCorners[2]->y <<
-                "|bl" << player2.hitBoxCorners[3]->x << player2.hitBoxCorners[2]->y;
+    qDebug() << "tr" << player2.hitBoxCorners[0].x << player2.hitBoxCorners[0].y <<
+                "|tl" << player2.hitBoxCorners[1].x << player2.hitBoxCorners[1].y <<
+                "|br" << player2.hitBoxCorners[2].x << player2.hitBoxCorners[2].y <<
+                "|bl" << player2.hitBoxCorners[3].x << player2.hitBoxCorners[2].y;
     qDebug() << "";
     qDebug() <<"playersNear" << checkPlayersNear();
 
@@ -146,7 +143,7 @@ void Engine::update() {
 }
 
 void Engine::resetGame() {
-    player1.yAngle = 0.0;
+    player1.yAngle = 45.0;
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
     player1.updateVaribles();
@@ -169,18 +166,41 @@ bool Engine::checkPlayersNear() {
 }
 
 bool Engine::checkCollisionShipShip() {
-//    Sp1 = player1;
-//    p2 = player2;
+    Ship p1 = player1;
+    Ship p2 = player2;
 
-//    p2.xPos -= p1.xPos;
-//    p2.zPos -= p1.zPos;
-//    p2.yAngle -= p1.yAngle;
-//    p2.updateVaribles();
+    p2.xPos -= p1.xPos;
+    p2.zPos -= p1.zPos;
+    p2.yAngle -= p1.yAngle;
+    p2.updateVaribles();
 
-//    p1.xPos = 0;
-//    p1.zPos = 0;
-//    p1.yAngle = 0;
-//    p1.updateVaribles();
+    p1.xPos = 0;
+    p1.zPos = 0;
+    p1.yAngle = 0;
+    p1.updateVaribles();
+
+    for(int i = 0; i < 4; i++) {
+        if(p2.hitBoxCorners[i].x > p1.limits[0] && p2.hitBoxCorners[i].x < p1.limits[1] &&
+        p2.hitBoxCorners[i].y > p1.limits[2] && p2.hitBoxCorners[i].y < p1.limits[3]) return true;
+    }
+
+    p1 = player1;
+    p2 = player2;
+
+    p1.xPos -= p2.xPos;
+    p1.zPos -= p2.zPos;
+    p1.yAngle -= p2.yAngle;
+    p2.updateVaribles();
+
+    p2.xPos = 0;
+    p2.zPos = 0;
+    p2.yAngle = 0;
+    p2.updateVaribles();
+
+    for(int i = 0; i < 4; i++) {
+        if(p1.hitBoxCorners[i].x > p2.limits[0] && p1.hitBoxCorners[i].x < p2.limits[1] &&
+        p1.hitBoxCorners[i].y > p2.limits[2] && p1.hitBoxCorners[i].y < p2.limits[3]) return true;
+    }
 
     return false;
 }

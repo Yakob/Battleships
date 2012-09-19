@@ -6,10 +6,8 @@
 class Utils {
 public:
     double getRadian(float degree);
-    Point2D rotatePoint(Point2D *point, double radian);
-    Point2D rotateAndTranslatePoint(Point2D *point, double radian, float x, float y);
-    void rotateAndTranslateHitBox(Point2D **source, Point2D **target, double radian, float x, float y);
-    void getLimits(Point2D **sourcePoints, float *limits);
+    void rotateAndTranslateHitBox(Point2D *source, Point2D *target, double radian, float x, float y);
+    void getLimits(Point2D *sourcePoints, float *limits);
 };
 
 #endif // UTILS_H

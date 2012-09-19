@@ -12,20 +12,20 @@ Ship::Ship() {
     rightdKeyPressed = false;
     leftKeyPressed = false;
 
-    defaultTopRight.set(0.6f,-0.6f);
-    defaultTopLeft.set(-0.6f,-0.6f);
-    defaultBottomLeft.set(-0.6f,0.6f);
-    defaultBottomRight.set(0.6f,0.6f);
+    defaultTopRight.set(0.5f,-0.5f);
+    defaultTopLeft.set(-0.5f,-0.5f);
+    defaultBottomLeft.set(-0.5f,0.5f);
+    defaultBottomRight.set(0.5f,0.5f);
 
-    hitBoxCorners[0] = &topRight;
-    hitBoxCorners[1] = &topLeft;
-    hitBoxCorners[2] = &bottomRight;
-    hitBoxCorners[3] = &bottomLeft;
+    hitBoxCorners[0] = topRight;
+    hitBoxCorners[1] = topLeft;
+    hitBoxCorners[2] = bottomRight;
+    hitBoxCorners[3] = bottomLeft;
 
-    defaultHitBox[0] = &defaultTopRight;
-    defaultHitBox[1] = &defaultTopLeft;
-    defaultHitBox[2] = &defaultBottomRight;
-    defaultHitBox[3] = &defaultBottomLeft;
+    defaultHitBox[0] = defaultTopRight;
+    defaultHitBox[1] = defaultTopLeft;
+    defaultHitBox[2] = defaultBottomRight;
+    defaultHitBox[3] = defaultBottomLeft;
 
     limits[0] = hitboxMinX;
     limits[1] = hitboxMaxX;
@@ -46,16 +46,6 @@ void Ship::updateVaribles() {
     cosMrad = cos(-yRadian);
     utils.rotateAndTranslateHitBox(defaultHitBox, hitBoxCorners, yMinusRadian, xPos, zPos);
     utils.getLimits(hitBoxCorners, limits);
-}
-
-void Ship::drawHitBox() {
-    glBegin(GL_QUADS);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glVertex3f(bottomLeft.x, 0.5f, bottomLeft.y);
-        glVertex3f(topLeft.x, 0.5f, topLeft.y);
-        glVertex3f(topRight.x, 0.5f, topRight.y);
-        glVertex3f(bottomRight.x, 0.5f, bottomRight.y);
-    glEnd();
 }
 
 void Ship::draw() {

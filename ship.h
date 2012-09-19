@@ -11,10 +11,9 @@ public:
     Ship();
     ~Ship();
     void draw();
-    void drawHitBox();
 
-    Point2D *hitBoxCorners[4];
-    Point2D *defaultHitBox[4];
+    Point2D hitBoxCorners[4];
+    Point2D defaultHitBox[4];
     float limits[4];
 
     float yAngle;

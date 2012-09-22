@@ -12,10 +12,10 @@ Ship::Ship() {
     rightdKeyPressed = false;
     leftKeyPressed = false;
 
-    defaultTopRight.set(0.5f,-0.5f);
-    defaultTopLeft.set(-0.5f,-0.5f);
-    defaultBottomLeft.set(-0.5f,0.5f);
-    defaultBottomRight.set(0.5f,0.5f);
+    defaultTopRight.set(0.55f,-0.55f);
+    defaultTopLeft.set(-0.55f,-0.55f);
+    defaultBottomLeft.set(-0.55f,0.55f);
+    defaultBottomRight.set(0.55f,0.55f);
 
     hitBoxCorners[0] = topRight;
     hitBoxCorners[1] = topLeft;

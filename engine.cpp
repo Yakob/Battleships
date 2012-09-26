@@ -205,6 +205,17 @@ bool Engine::checkCollisionShipShip() {
     return false;
 }
 
+void Engine::updateMissiles() {
+    std::list<Missile*>::iterator i = missilesList.begin();
+    while (i != missilesList.end()) {
+        if ((*i)->update()) {
+            missilesList.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
 void Engine::turnLeft(Ship *player) {
     player->yAngle += TURN_SPEED;
     if (player->yAngle > 360.0f) player->yAngle -= 360.0f;

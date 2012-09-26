@@ -5,7 +5,7 @@ class Missile {
 public:
     Missile(float x, float z, float angle);
     ~Missile();
-    void update();
+    bool update();
     void move();
     void draw();
 private:

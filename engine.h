@@ -5,6 +5,7 @@
 #include <QColor>
 
 #include <ship.h>
+#include <missile.h>
 
 class Engine : public QGLWidget
 {
@@ -13,6 +14,7 @@ class Engine : public QGLWidget
 public:
     Engine();
     ~Engine();
+    std::list<Missile*> missilesList;
 
 public slots:
     void update();
@@ -47,6 +49,7 @@ private:
     bool checkCollisionShipMap(Ship *player);
     bool checkPlayersNear();
     bool checkCollisionShipShip();
+    void updateMissiles();
 };
 
 #endif // ENGINE_H

@@ -73,11 +73,22 @@ void Engine::paintGL() {
     player2.draw();
     glPopMatrix();
 
+    glPushMatrix();
     glTranslatef(0, 0, 2);
     player1.draw();
     glTranslatef(player2.xPos - player1.xPos, 0, player2.zPos - player1.zPos);
     glRotatef(player2.yAngle - player1.yAngle, 0, 1, 0);
     player2.draw();
+    glPopMatrix();
+
+    Missile* m;
+    foreach(m, missilesList) {
+        glPushMatrix();
+        glTranslatef(m->x, 0.4, m->z);
+        glRotatef(m->angle, 0, 1, 0);
+        m->draw();
+        glPopMatrix();
+    }
 }
 
 void Engine::update() {
@@ -118,6 +129,8 @@ void Engine::update() {
         playersMovment = false;
     }
 
+    updateMissiles();
+
     //For debug purposes
     qDebug() << "Player 1";
     qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
@@ -152,6 +165,13 @@ void Engine::resetGame() {
     player2.xPos = -SEA_SIZE + 3.0f;
     player2.zPos = -SEA_SIZE + 3.0f;
     player2.updateVaribles();
+
+    Missile* m;
+    foreach (m, missilesList) {
+        m->~Missile();
+        m = NULL;
+        missilesList.removeOne(m);
+    }
 }
 
 bool Engine::checkCollisionShipMap(Ship *player) {
@@ -206,13 +226,8 @@ bool Engine::checkCollisionShipShip() {
 }
 
 void Engine::updateMissiles() {
-    std::list<Missile*>::iterator i = missilesList.begin();
-    while (i != missilesList.end()) {
-        if ((*i)->update()) {
-            missilesList.erase(i);
-        } else {
-            i++;
-        }
+    for (int i = 0; i < missilesList.size(); ++i) {
+        if(missilesList[i]->update()) missilesList.removeAt(i);
     }
 }
 
@@ -234,6 +249,11 @@ void Engine::moveForward(Ship *player) {
 void Engine::moveBackward(Ship *player) {
     player->xPos += player->sinRad * MOVE_SPEED;
     player->zPos += player->cosRad * MOVE_SPEED;
+}
+
+void Engine::shot(Ship *player) {
+    Missile *missile = new Missile(player->xPos, player->zPos, player->yAngle);
+    missilesList.append(missile);
 }
 
 void Engine::keyPressEvent(QKeyEvent *event) {
@@ -280,6 +300,8 @@ void Engine::keyPressEvent(QKeyEvent *event) {
     case Qt::Key_S:
         player1.backwardKeyPressed = true;
         break;
+    case Qt::Key_Space:
+        shot(&player1);
     //player 2
     case Qt::Key_Left:
         player2.leftKeyPressed = true;

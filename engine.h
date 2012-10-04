@@ -14,7 +14,7 @@ class Engine : public QGLWidget
 public:
     Engine();
     ~Engine();
-    std::list<Missile*> missilesList;
+    QList<Missile*> missilesList;
 
 public slots:
     void update();
@@ -45,6 +45,7 @@ private:
     void turnRight(Ship *player);
     void moveForward(Ship *player);
     void moveBackward(Ship *player);
+    void shot(Ship *player);
 
     bool checkCollisionShipMap(Ship *player);
     bool checkPlayersNear();

@@ -1,6 +1,8 @@
 #ifndef MISSILE_H
 #define MISSILE_H
 
+#include <utils.h>
+
 class Missile {
 public:
     Missile(float x, float z, float angle);
@@ -8,13 +10,14 @@ public:
     bool update();
     void move();
     void draw();
-private:
+    float angle;
     float x;
     float z;
+private:
     float startX;
     float startZ;
-    float angle;
     double radian;
+    Utils utils;
 };
 
 #endif // MISSILE_H

@@ -18,6 +18,8 @@ public:
 
 public slots:
     void update();
+    void reloadDonePlayer1();
+    void reloadDonePlayer2();
 
 protected:
     void initializeGL();
@@ -41,11 +43,8 @@ private:
 
     void resetGame();
     void drawSea(int size);
-    void turnLeft(Ship *player);
-    void turnRight(Ship *player);
-    void moveForward(Ship *player);
-    void moveBackward(Ship *player);
-    void shot(Ship *player);
+    void shotPlayer1();
+    void shotPlayer2();
 
     bool checkCollisionShipMap(Ship *player);
     bool checkPlayersNear();

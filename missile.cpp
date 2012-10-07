@@ -33,6 +33,7 @@ void Missile::move() {
 
 void Missile::draw() {
     GLUquadricObj *obj = gluNewQuadric();
+    glTranslatef(0, 0.2, -0.6);
     glRotatef(180, 0, 1, 0);
     glColor3f(0.33f, 0.33f, 0.33f);
     gluCylinder(obj, 0, 0.07, 0.001, 30, 30);

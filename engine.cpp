@@ -8,9 +8,8 @@
 #include <engine.h>
 
 #define SEA_SIZE 10
-#define TURN_SPEED 4.0f
-#define MOVE_SPEED 0.2f
 #define NEAR 2.0f
+#define RELOAD_TIME_MSEC 750
 
 Engine::Engine() {
     timer = new QTimer(this);
@@ -64,21 +63,21 @@ void Engine::paintGL() {
     glPushMatrix();
     glTranslatef(player1.xPos, 0, player1.zPos);
     glRotatef(player1.yAngle, 0, 1, 0);
-    player1.draw();
+    player1.draw(1, 0, 0);
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef(player2.xPos, 0, player2.zPos);
     glRotatef(player2.yAngle, 0, 1, 0);
-    player2.draw();
+    player2.draw(0, 0, 1);
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef(0, 0, 2);
-    player1.draw();
+    player1.draw(1, 0, 0);
     glTranslatef(player2.xPos - player1.xPos, 0, player2.zPos - player1.zPos);
     glRotatef(player2.yAngle - player1.yAngle, 0, 1, 0);
-    player2.draw();
+    player2.draw(0, 0, 1);
     glPopMatrix();
 
     Missile* m;
@@ -97,14 +96,17 @@ void Engine::update() {
 
     if(!gamePause)
     {
-        if(player1.forwardKeyPressed) moveForward(&player1);
-        if(player1.backwardKeyPressed) moveBackward(&player1);
-        if(player1.rightdKeyPressed) turnRight(&player1);
-        if(player1.leftKeyPressed) turnLeft(&player1);
-        if(player2.forwardKeyPressed) moveForward(&player2);
-        if(player2.backwardKeyPressed) moveBackward(&player2);
-        if(player2.rightdKeyPressed) turnRight(&player2);
-        if(player2.leftKeyPressed) turnLeft(&player2);
+        if(player1.forwardKeyPressed) player1.moveForward();
+        if(player1.backwardKeyPressed) player1.moveBackward();
+        if(player1.leftKeyPressed) player1.turnLeft();
+        if(player1.rightdKeyPressed) player1.turnRight();
+        if(player1.shotKeyPressed && !player1.reload) shotPlayer1();
+
+        if(player2.forwardKeyPressed) player2.moveForward();
+        if(player2.backwardKeyPressed) player2.moveBackward();
+        if(player2.rightdKeyPressed) player2.turnRight();
+        if(player2.leftKeyPressed) player2.turnLeft();
+        if(player2.shotKeyPressed && !player2.reload) shotPlayer2();
     }
 
     if(player1.forwardKeyPressed || player1.backwardKeyPressed ||
@@ -231,29 +233,30 @@ void Engine::updateMissiles() {
     }
 }
 
-void Engine::turnLeft(Ship *player) {
-    player->yAngle += TURN_SPEED;
-    if (player->yAngle > 360.0f) player->yAngle -= 360.0f;
+void Engine::shotPlayer1() {
+    if(!player1.reload) {
+        Missile *missile = new Missile(player1.xPos, player1.zPos, player1.yAngle);
+        missilesList.append(missile);
+        player1.reload = true;
+        QTimer::singleShot(RELOAD_TIME_MSEC, this, SLOT(reloadDonePlayer1()));
+    }
 }
 
-void Engine::turnRight(Ship *player) {
-    player->yAngle -= TURN_SPEED;
-    if (player->yAngle < 0.0f) player->yAngle += 360.0f;
+void Engine::shotPlayer2() {
+    if(!player2.reload) {
+        Missile *missile = new Missile(player2.xPos, player2.zPos, player2.yAngle);
+        missilesList.append(missile);
+        player2.reload = true;
+        QTimer::singleShot(RELOAD_TIME_MSEC, this, SLOT(reloadDonePlayer2()));
+    }
 }
 
-void Engine::moveForward(Ship *player) {
-    player->xPos -= player->sinRad * MOVE_SPEED;
-    player->zPos -= player->cosRad * MOVE_SPEED;
+void Engine::reloadDonePlayer1() {
+    player1.reload = false;
 }
 
-void Engine::moveBackward(Ship *player) {
-    player->xPos += player->sinRad * MOVE_SPEED;
-    player->zPos += player->cosRad * MOVE_SPEED;
-}
-
-void Engine::shot(Ship *player) {
-    Missile *missile = new Missile(player->xPos, player->zPos, player->yAngle);
-    missilesList.append(missile);
+void Engine::reloadDonePlayer2() {
+    player2.reload = false;
 }
 
 void Engine::keyPressEvent(QKeyEvent *event) {
@@ -301,7 +304,8 @@ void Engine::keyPressEvent(QKeyEvent *event) {
         player1.backwardKeyPressed = true;
         break;
     case Qt::Key_Space:
-        shot(&player1);
+        player1.shotKeyPressed = true;
+        break;
     //player 2
     case Qt::Key_Left:
         player2.leftKeyPressed = true;
@@ -314,6 +318,9 @@ void Engine::keyPressEvent(QKeyEvent *event) {
         break;
     case Qt::Key_Down:
         player2.backwardKeyPressed = true;
+        break;
+    case Qt::Key_Control:
+        player2.shotKeyPressed = true;
         break;
     }
 }
@@ -332,6 +339,10 @@ void Engine::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_S:
         player1.backwardKeyPressed = false;
         break;
+    case Qt::Key_Space:
+        player1.shotKeyPressed = false;
+        break;
+
     case Qt::Key_Left:
         player2.leftKeyPressed = false;
         break;
@@ -343,6 +354,9 @@ void Engine::keyReleaseEvent(QKeyEvent *event) {
         break;
     case Qt::Key_Down:
         player2.backwardKeyPressed = false;
+        break;
+    case Qt::Key_Control:
+        player2.shotKeyPressed = false;
         break;
     }
 }

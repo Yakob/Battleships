@@ -10,7 +10,7 @@ public:
 
     Ship();
     ~Ship();
-    void draw();
+    void draw(float r, float g, float b);
 
     Point2D hitBoxCorners[4];
     Point2D defaultHitBox[4];
@@ -30,8 +30,14 @@ public:
     bool backwardKeyPressed;
     bool rightdKeyPressed;
     bool leftKeyPressed;
+    bool shotKeyPressed;
+    bool reload;
 
     void updateVaribles();
+    void turnLeft();
+    void turnRight();
+    void moveForward();
+    void moveBackward();
 
 private:
     Utils utils;

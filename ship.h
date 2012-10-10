@@ -3,18 +3,15 @@
 
 #include <point2D.h>
 #include <utils.h>
+#include <hitbox.h>
 
-class Ship
+class Ship : public Hitbox
 {
 public:
 
     Ship();
     ~Ship();
     void draw(float r, float g, float b);
-
-    Point2D hitBoxCorners[4];
-    Point2D defaultHitBox[4];
-    float limits[4];
 
     float yAngle;
     float xPos;
@@ -41,20 +38,5 @@ public:
 
 private:
     Utils utils;
-
-    float hitboxMaxX;
-    float hitboxMinX;
-    float hitboxMaxZ;
-    float hitboxMinZ;
-
-    Point2D topRight;
-    Point2D topLeft;
-    Point2D bottomRight;
-    Point2D bottomLeft;
-
-    Point2D defaultTopRight;
-    Point2D defaultTopLeft;
-    Point2D defaultBottomRight;
-    Point2D defaultBottomLeft;
 };
 #endif // SHIP_H

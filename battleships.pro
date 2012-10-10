@@ -17,12 +17,14 @@ SOURCES += main.cpp \
     ship.cpp \
     point2D.cpp \
     utils.cpp \
-    missile.cpp
+    missile.cpp \
+    hitbox.cpp
 
 HEADERS  += engine.h \
     ship.h \
     point2D.h \
     utils.h \
-    missile.h
+    missile.h \
+    hitbox.h
 
 LIBS += -lGLU

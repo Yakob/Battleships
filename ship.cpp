@@ -16,25 +16,15 @@ Ship::Ship() {
     shotKeyPressed = false;
     reload = false;
 
-    defaultTopRight.set(0.55f,-0.55f);
-    defaultTopLeft.set(-0.55f,-0.55f);
-    defaultBottomLeft.set(-0.55f,0.55f);
-    defaultBottomRight.set(0.55f,0.55f);
+    baseHitbox.append(new Point2D(0.5f, 0.5f));
+    baseHitbox.append(new Point2D(0.5f, -0.5f));
+    baseHitbox.append(new Point2D(-0.5f, 0.5f));
+    baseHitbox.append(new Point2D(-0.5f, -0.5f));
 
-    hitBoxCorners[0] = topRight;
-    hitBoxCorners[1] = topLeft;
-    hitBoxCorners[2] = bottomRight;
-    hitBoxCorners[3] = bottomLeft;
-
-    defaultHitBox[0] = defaultTopRight;
-    defaultHitBox[1] = defaultTopLeft;
-    defaultHitBox[2] = defaultBottomRight;
-    defaultHitBox[3] = defaultBottomLeft;
-
-    limits[0] = hitboxMinX;
-    limits[1] = hitboxMaxX;
-    limits[2] = hitboxMinZ;
-    limits[3] = hitboxMaxZ;
+    hitbox.append(new Point2D(0.5f, 0.5f));
+    hitbox.append(new Point2D(0.5f, -0.5f));
+    hitbox.append(new Point2D(-0.5f, 0.5f));
+    hitbox.append(new Point2D(-0.5f, -0.5f));
 
     updateVaribles();
 }
@@ -48,8 +38,8 @@ void Ship::updateVaribles() {
     cosRad = cos(yRadian);
     sinMrad = sin(-yRadian);
     cosMrad = cos(-yRadian);
-    utils.rotateAndTranslateHitBox(defaultHitBox, hitBoxCorners, yMinusRadian, xPos, zPos);
-    utils.getLimits(hitBoxCorners, limits);
+    updateHitbox(sinMrad, cosMrad, xPos, zPos);
+    updateLimits();
 }
 
 void Ship::turnLeft() {

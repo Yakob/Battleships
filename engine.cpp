@@ -136,21 +136,15 @@ void Engine::update() {
     //For debug purposes
     qDebug() << "Player 1";
     qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
-    qDebug() << "maxX" << player1.limits[1] << "|minX" << player1.limits[0] <<
-                "|maxZ" << player1.limits[3] << "|minZ" << player1.limits[2];
-    qDebug() << "tr" << player1.hitBoxCorners[0].x << player1.hitBoxCorners[0].y <<
-                "|tl" << player1.hitBoxCorners[1].x << player1.hitBoxCorners[1].y <<
-                "|br" << player1.hitBoxCorners[2].x << player1.hitBoxCorners[2].y <<
-                "|bl" << player1.hitBoxCorners[3].x << player1.hitBoxCorners[2].y;
+    qDebug() << "maxX" << player1.maxX << "|minX" << player1.minX <<
+                "|maxZ" << player1.maxZ << "|minZ" << player1.minZ;
+    qDebug() << "";
     qDebug() << "";
     qDebug() << "Player 2";
     qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
-    qDebug() << "maxX" << player2.limits[1] << "|minX" << player2.limits[0] <<
-                "|maxZ" << player2.limits[3] << "|minZ" << player2.limits[2];
-    qDebug() << "tr" << player2.hitBoxCorners[0].x << player2.hitBoxCorners[0].y <<
-                "|tl" << player2.hitBoxCorners[1].x << player2.hitBoxCorners[1].y <<
-                "|br" << player2.hitBoxCorners[2].x << player2.hitBoxCorners[2].y <<
-                "|bl" << player2.hitBoxCorners[3].x << player2.hitBoxCorners[2].y;
+    qDebug() << "maxX" << player2.maxX << "|minX" << player2.minX <<
+                "|maxZ" << player2.maxZ << "|minZ" << player2.minZ;
+    qDebug() << "";
     qDebug() << "";
     qDebug() <<"playersNear" << checkPlayersNear();
 
@@ -177,8 +171,8 @@ void Engine::resetGame() {
 }
 
 bool Engine::checkCollisionShipMap(Ship *player) {
-    return (player->limits[1] > SEA_SIZE || player->limits[0] < -SEA_SIZE ||
-            player->limits[3] > SEA_SIZE || player->limits[2] < -SEA_SIZE)
+    return (player->maxX > SEA_SIZE || player->minX < -SEA_SIZE ||
+            player->maxZ > SEA_SIZE || player->minZ < -SEA_SIZE)
             ? true : false;
 }
 
@@ -187,7 +181,7 @@ bool Engine::checkPlayersNear() {
             ? true : false;
 }
 
-bool Engine::checkCollisionShipShip() {
+bool Engine::checkCollisionShipShip() {/*
     Ship p1 = player1;
     Ship p2 = player2;
 
@@ -222,7 +216,7 @@ bool Engine::checkCollisionShipShip() {
     for(int i = 0; i < 4; i++) {
         if(p1.hitBoxCorners[i].x > p2.limits[0] && p1.hitBoxCorners[i].x < p2.limits[1] &&
         p1.hitBoxCorners[i].y > p2.limits[2] && p1.hitBoxCorners[i].y < p2.limits[3]) return true;
-    }
+    }*/
 
     return false;
 }

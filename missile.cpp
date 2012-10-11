@@ -4,21 +4,29 @@
 #include <GL/glut.h>
 
 #define SHOT_LENGTH 60.0f
-#define MISSILE_SPEED 0.4f
+#define MISSILE_SPEED 0.5f
 
-Missile::Missile(float x, float z, float angle) {
+Missile::Missile(float x, float z, float angle, Ship *player) {
     this->x = x;
     this->startX = x;
     this->z = z;
     this->startZ = z;
     this->angle = angle;
+    this->player = player;
+
+    createBaseHitboxPoint(0, -0.2f);
+    createBaseHitboxPoint(0.07, 0);
+    createBaseHitboxPoint(-0.07, 0);
+    createBaseHitboxPoint(0.07, 0.2f);
+    createBaseHitboxPoint(-0.07, 0.2f);
 }
 
 Missile::~Missile(){}
 
-bool Missile::update() {
+bool Missile::isOutOfFuel() {
+    updateHitbox(sin(-utils.getRadian(angle)), cos(-utils.getRadian(angle)), x, z);
+    updateLimits();
     if(sqrt(pow((startX - x), 2) + pow((startZ - z), 2) > SHOT_LENGTH)) {
-        this->~Missile();
         return true;
     } else {
         move();
@@ -33,10 +41,10 @@ void Missile::move() {
 
 void Missile::draw() {
     GLUquadricObj *obj = gluNewQuadric();
-    glTranslatef(0, 0.2, -0.6);
+    glTranslatef(0, 0.4f, 0.2f);
     glRotatef(180, 0, 1, 0);
     glColor3f(0.33f, 0.33f, 0.33f);
-    gluCylinder(obj, 0, 0.07, 0.001, 30, 30);
+    gluCylinder(obj, 0, 0.07, 0, 30, 30);
     gluCylinder(obj, 0.07, 0.07, 0.2, 30, 30);
     glTranslatef(0, 0, 0.2f);
     gluCylinder(obj, 0.07, 0, 0.2, 30, 30);

@@ -8,8 +8,11 @@
 #include <engine.h>
 
 #define SEA_SIZE 10
-#define NEAR 2.0f
+#define NEAR 3.0f
 #define RELOAD_TIME_MSEC 750
+#define MAP_COLLISION_OFFSET 0.1f
+#define SHIP_COLLISION_OFFSET 0.1f
+#define MISSILE_COLLISION_OFFSET 0.1f
 
 Engine::Engine() {
     timer = new QTimer(this);
@@ -72,14 +75,6 @@ void Engine::paintGL() {
     player2.draw(0, 0, 1);
     glPopMatrix();
 
-    glPushMatrix();
-    glTranslatef(0, 0, 2);
-    player1.draw(1, 0, 0);
-    glTranslatef(player2.xPos - player1.xPos, 0, player2.zPos - player1.zPos);
-    glRotatef(player2.yAngle - player1.yAngle, 0, 1, 0);
-    player2.draw(0, 0, 1);
-    glPopMatrix();
-
     Missile* m;
     foreach(m, missilesList) {
         glPushMatrix();
@@ -87,6 +82,14 @@ void Engine::paintGL() {
         glRotatef(m->angle, 0, 1, 0);
         m->draw();
         glPopMatrix();
+    }
+
+    Point2D* p;
+    foreach (p, player1.hitbox) {
+        glColor3f(1,1,1);
+        glBegin(GL_POINTS);
+            glVertex3f(p->x, 0.4f, p->y);
+        glEnd();
     }
 }
 
@@ -132,27 +135,11 @@ void Engine::update() {
     }
 
     updateMissiles();
-
-    //For debug purposes
-    qDebug() << "Player 1";
-    qDebug() << "x" << player1.xPos << "|z" << player1.zPos << "|a" << player1.yAngle;
-    qDebug() << "maxX" << player1.maxX << "|minX" << player1.minX <<
-                "|maxZ" << player1.maxZ << "|minZ" << player1.minZ;
-    qDebug() << "";
-    qDebug() << "";
-    qDebug() << "Player 2";
-    qDebug() << "x" << player2.xPos << "|z" << player2.zPos << "|a" << player2.yAngle;
-    qDebug() << "maxX" << player2.maxX << "|minX" << player2.minX <<
-                "|maxZ" << player2.maxZ << "|minZ" << player2.minZ;
-    qDebug() << "";
-    qDebug() << "";
-    qDebug() <<"playersNear" << checkPlayersNear();
-
     this->updateGL();
 }
 
 void Engine::resetGame() {
-    player1.yAngle = 45.0;
+    player1.yAngle = 0.0;
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
     player1.updateVaribles();
@@ -171,8 +158,14 @@ void Engine::resetGame() {
 }
 
 bool Engine::checkCollisionShipMap(Ship *player) {
-    return (player->maxX > SEA_SIZE || player->minX < -SEA_SIZE ||
-            player->maxZ > SEA_SIZE || player->minZ < -SEA_SIZE)
+    return (player->maxX > SEA_SIZE - MAP_COLLISION_OFFSET|| player->minX < -SEA_SIZE + MAP_COLLISION_OFFSET||
+            player->maxZ > SEA_SIZE - MAP_COLLISION_OFFSET|| player->minZ < -SEA_SIZE + MAP_COLLISION_OFFSET)
+            ? true : false;
+}
+
+bool Engine::checkCollisionMissileMap(Missile *missile) {
+    return (missile->maxX > SEA_SIZE - MAP_COLLISION_OFFSET|| missile->minX < -SEA_SIZE + MAP_COLLISION_OFFSET||
+            missile->maxZ > SEA_SIZE - MAP_COLLISION_OFFSET|| missile->minZ < -SEA_SIZE + MAP_COLLISION_OFFSET)
             ? true : false;
 }
 
@@ -181,55 +174,48 @@ bool Engine::checkPlayersNear() {
             ? true : false;
 }
 
-bool Engine::checkCollisionShipShip() {/*
-    Ship p1 = player1;
-    Ship p2 = player2;
-
-    p2.xPos -= p1.xPos;
-    p2.zPos -= p1.zPos;
-    p2.yAngle -= p1.yAngle;
-    p2.updateVaribles();
-
-    p1.xPos = 0;
-    p1.zPos = 0;
-    p1.yAngle = 0;
-    p1.updateVaribles();
-
-    for(int i = 0; i < 4; i++) {
-        if(p2.hitBoxCorners[i].x > p1.limits[0] && p2.hitBoxCorners[i].x < p1.limits[1] &&
-        p2.hitBoxCorners[i].y > p1.limits[2] && p2.hitBoxCorners[i].y < p1.limits[3]) return true;
+bool Engine::checkCollisionShipShip() {
+    Point2D* p1;
+    Point2D* p2;
+    foreach (p1, player1.hitbox) {
+        foreach (p2, player2.hitbox) {
+            if(utils.getDistance(p1, p2) < SHIP_COLLISION_OFFSET) return true;
+        }
     }
 
-    p1 = player1;
-    p2 = player2;
+    return false;
+}
 
-    p1.xPos -= p2.xPos;
-    p1.zPos -= p2.zPos;
-    p1.yAngle -= p2.yAngle;
-    p2.updateVaribles();
+bool Engine::checkCollisionMissileShip(Ship *player, Missile *missile) {
+    if(missile->player == player) return false;
 
-    p2.xPos = 0;
-    p2.zPos = 0;
-    p2.yAngle = 0;
-    p2.updateVaribles();
-
-    for(int i = 0; i < 4; i++) {
-        if(p1.hitBoxCorners[i].x > p2.limits[0] && p1.hitBoxCorners[i].x < p2.limits[1] &&
-        p1.hitBoxCorners[i].y > p2.limits[2] && p1.hitBoxCorners[i].y < p2.limits[3]) return true;
-    }*/
+    Point2D* p;
+    Point2D* m;
+    foreach(p, player->hitbox) {
+        foreach (m, missile->hitbox) {
+            if(utils.getDistance(p, m) < MISSILE_COLLISION_OFFSET) {
+                return true;
+            }
+        }
+    }
 
     return false;
 }
 
 void Engine::updateMissiles() {
-    for (int i = 0; i < missilesList.size(); ++i) {
-        if(missilesList[i]->update()) missilesList.removeAt(i);
+    Missile* m;
+    foreach(m, missilesList) {
+        if(m->isOutOfFuel() || checkCollisionMissileMap(m) ||
+           checkCollisionMissileShip(&player1, m) || checkCollisionMissileShip(&player2, m)) {
+            m->~Missile();
+            missilesList.removeOne(m);
+        }
     }
 }
 
 void Engine::shotPlayer1() {
     if(!player1.reload) {
-        Missile *missile = new Missile(player1.xPos, player1.zPos, player1.yAngle);
+        Missile *missile = new Missile(player1.xPos, player1.zPos, player1.yAngle, &player1);
         missilesList.append(missile);
         player1.reload = true;
         QTimer::singleShot(RELOAD_TIME_MSEC, this, SLOT(reloadDonePlayer1()));
@@ -238,7 +224,7 @@ void Engine::shotPlayer1() {
 
 void Engine::shotPlayer2() {
     if(!player2.reload) {
-        Missile *missile = new Missile(player2.xPos, player2.zPos, player2.yAngle);
+        Missile *missile = new Missile(player2.xPos, player2.zPos, player2.yAngle, &player2);
         missilesList.append(missile);
         player2.reload = true;
         QTimer::singleShot(RELOAD_TIME_MSEC, this, SLOT(reloadDonePlayer2()));

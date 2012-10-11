@@ -19,3 +19,8 @@ void Hitbox::updateLimits() {
         if(p->y > maxZ) maxZ = p->y;
     }
 }
+
+void Hitbox::createBaseHitboxPoint(float x, float y) {
+    baseHitbox.append(new Point2D(x, y));
+    hitbox.append(new Point2D(x, y));
+}

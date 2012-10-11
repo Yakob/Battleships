@@ -16,15 +16,29 @@ Ship::Ship() {
     shotKeyPressed = false;
     reload = false;
 
-    baseHitbox.append(new Point2D(0.5f, 0.5f));
-    baseHitbox.append(new Point2D(0.5f, -0.5f));
-    baseHitbox.append(new Point2D(-0.5f, 0.5f));
-    baseHitbox.append(new Point2D(-0.5f, -0.5f));
+    createBaseHitboxPoint(0, -1.0f);
+    createBaseHitboxPoint(-0.180f, -0.73f);
+    createBaseHitboxPoint(-0.340f, -0.5f);
+    createBaseHitboxPoint(0.180f, -0.73f);
+    createBaseHitboxPoint(0.340f, -0.5f);
 
-    hitbox.append(new Point2D(0.5f, 0.5f));
-    hitbox.append(new Point2D(0.5f, -0.5f));
-    hitbox.append(new Point2D(-0.5f, 0.5f));
-    hitbox.append(new Point2D(-0.5f, -0.5f));
+    createBaseHitboxPoint(0.5f, -0.25f);
+    createBaseHitboxPoint(0.5f, 0);
+    createBaseHitboxPoint(0.5f, 0.25f);
+    createBaseHitboxPoint(0.5f, 0.5f);
+    createBaseHitboxPoint(0.5f, 0.75);
+    createBaseHitboxPoint(0.5f, 1);
+
+    createBaseHitboxPoint(-0.5f, -0.25f);
+    createBaseHitboxPoint(-0.5f, 0);
+    createBaseHitboxPoint(-0.5f, 0.25f);
+    createBaseHitboxPoint(-0.5f, 0.5f);
+    createBaseHitboxPoint(-0.5f, 0.75);
+    createBaseHitboxPoint(-0.5f, 1);
+
+    createBaseHitboxPoint(-0.25f, 1);
+    createBaseHitboxPoint(0, 1);
+    createBaseHitboxPoint(0.25f, 1);
 
     updateVaribles();
 }

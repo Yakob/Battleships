@@ -47,8 +47,10 @@ private:
     void shotPlayer2();
 
     bool checkCollisionShipMap(Ship *player);
+    bool checkCollisionMissileMap(Missile* missile);
     bool checkPlayersNear();
     bool checkCollisionShipShip();
+    bool checkCollisionMissileShip(Ship* player, Missile* missile);
     void updateMissiles();
 };
 

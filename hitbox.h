@@ -16,6 +16,7 @@ public:
 
     void updateHitbox(double sin, double cos, float x, float y);
     void updateLimits();
+    void createBaseHitboxPoint(float x, float y);
 };
 
 #endif // HITBOX_H

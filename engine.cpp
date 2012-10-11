@@ -12,7 +12,7 @@
 #define RELOAD_TIME_MSEC 750
 #define MAP_COLLISION_OFFSET 0.1f
 #define SHIP_COLLISION_OFFSET 0.1f
-#define MISSILE_COLLISION_OFFSET 0.1f
+#define MISSILE_COLLISION_OFFSET 0.2f
 
 Engine::Engine() {
     timer = new QTimer(this);
@@ -36,6 +36,8 @@ void Engine::initializeGL() {
     scale = 1.0f;
     gamePause = false;
     playersMovment = false;
+    pauseText = "";
+    newGameText = "";
     resetGame();
 }
 
@@ -63,6 +65,21 @@ void Engine::paintGL() {
     glScalef(scale, scale, scale);
     drawSea(SEA_SIZE);
 
+    glColor3f(1,0,0);
+    this->renderText(-23, 2, -15.0f, QString("Player 1"));
+    this->renderText(-24, 1.1f, -15.0f, getHitpoints(&player1));
+
+    glColor3f(0,0,1);
+    this->renderText(19, 2, -15.0f, QString("Player 2"));
+    this->renderText(20, 1.1f, -15.0f, getHitpoints(&player2));
+
+    glColor3f(1,1,0);
+    this->renderText(-0.5d, 1.0d, 1.0d, pauseText);
+
+    glColor3f(0,1,0);
+    this->renderText(-2.5d, 1.0d, -1.0d, checkForWinner());
+    this->renderText(-4.5d, 1.0d, 1.0d, newGameText);
+
     glPushMatrix();
     glTranslatef(player1.xPos, 0, player1.zPos);
     glRotatef(player1.yAngle, 0, 1, 0);
@@ -83,34 +100,28 @@ void Engine::paintGL() {
         m->draw();
         glPopMatrix();
     }
-
-    Point2D* p;
-    foreach (p, player1.hitbox) {
-        glColor3f(1,1,1);
-        glBegin(GL_POINTS);
-            glVertex3f(p->x, 0.4f, p->y);
-        glEnd();
-    }
 }
 
 void Engine::update() {
+    if(gamePause) {
+        this->updateGL();
+        return;
+    }
+
     player1_old = player1;
     player2_old = player2;
 
-    if(!gamePause)
-    {
-        if(player1.forwardKeyPressed) player1.moveForward();
-        if(player1.backwardKeyPressed) player1.moveBackward();
-        if(player1.leftKeyPressed) player1.turnLeft();
-        if(player1.rightdKeyPressed) player1.turnRight();
-        if(player1.shotKeyPressed && !player1.reload) shotPlayer1();
+    if(player1.forwardKeyPressed) player1.moveForward();
+    if(player1.backwardKeyPressed) player1.moveBackward();
+    if(player1.leftKeyPressed) player1.turnLeft();
+    if(player1.rightdKeyPressed) player1.turnRight();
+    if(player1.shotKeyPressed && !player1.reload) shotPlayer1();
 
-        if(player2.forwardKeyPressed) player2.moveForward();
-        if(player2.backwardKeyPressed) player2.moveBackward();
-        if(player2.rightdKeyPressed) player2.turnRight();
-        if(player2.leftKeyPressed) player2.turnLeft();
-        if(player2.shotKeyPressed && !player2.reload) shotPlayer2();
-    }
+    if(player2.forwardKeyPressed) player2.moveForward();
+    if(player2.backwardKeyPressed) player2.moveBackward();
+    if(player2.rightdKeyPressed) player2.turnRight();
+    if(player2.leftKeyPressed) player2.turnLeft();
+    if(player2.shotKeyPressed && !player2.reload) shotPlayer2();
 
     if(player1.forwardKeyPressed || player1.backwardKeyPressed ||
             player1.rightdKeyPressed || player1.leftKeyPressed) {
@@ -135,11 +146,12 @@ void Engine::update() {
     }
 
     updateMissiles();
+    checkForWinner();
     this->updateGL();
 }
 
 void Engine::resetGame() {
-    player1.yAngle = 0.0;
+    player1.yAngle = 45.0;
     player1.xPos = SEA_SIZE - 3.0f;
     player1.zPos = SEA_SIZE - 3.0f;
     player1.updateVaribles();
@@ -155,6 +167,32 @@ void Engine::resetGame() {
         m = NULL;
         missilesList.removeOne(m);
     }
+
+    player1.hitpoints = 3;
+    player2.hitpoints = 3;
+    newGameText = "";
+    pauseText = "";
+    gamePause = false;
+}
+
+QString Engine::getHitpoints(Ship *player) {
+    QString hitpoints = "";
+    for (int i = 0; i < player->hitpoints; ++i) {
+        hitpoints += "<3 ";
+    }
+    return hitpoints;
+}
+
+QString Engine::checkForWinner() {
+    if(player1.hitpoints < 1 || player2.hitpoints < 1) {
+        gamePause = true;
+        newGameText = "Press N to start a new game";
+    }
+
+    QString winner = "";
+    if(player1.hitpoints < 1) winner = "Player 1 wins !";
+    if(player2.hitpoints < 1) winner = "Player 2 wins !";
+    return winner;
 }
 
 bool Engine::checkCollisionShipMap(Ship *player) {
@@ -194,6 +232,7 @@ bool Engine::checkCollisionMissileShip(Ship *player, Missile *missile) {
     foreach(p, player->hitbox) {
         foreach (m, missile->hitbox) {
             if(utils.getDistance(p, m) < MISSILE_COLLISION_OFFSET) {
+                player->hitpoints -= 1;
                 return true;
             }
         }
@@ -246,10 +285,21 @@ void Engine::keyPressEvent(QKeyEvent *event) {
         close();
         break;
     case Qt::Key_P:
-        gamePause ? gamePause = false : gamePause = true;
+        if(gamePause) {
+            pauseText = "";
+            gamePause = false;
+        } else {
+            pauseText = "PAUSE";
+            gamePause = true;
+        }
         break;
     case Qt::Key_N:
         resetGame();
+        break;
+    case Qt::Key_R:
+        xAngle = 70;
+        yAngle = 0;
+        scale = 1.0f;
         break;
     //camera
     case Qt::Key_2:

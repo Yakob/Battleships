@@ -15,6 +15,7 @@ Ship::Ship() {
     leftKeyPressed = false;
     shotKeyPressed = false;
     reload = false;
+    hitpoints = 3;
 
     createBaseHitboxPoint(0, -1.0f);
     createBaseHitboxPoint(-0.180f, -0.73f);

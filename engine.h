@@ -40,11 +40,15 @@ private:
     Ship player2_old;
     bool gamePause;
     bool playersMovment;
+    QString pauseText;
+    QString newGameText;
 
     void resetGame();
     void drawSea(int size);
     void shotPlayer1();
     void shotPlayer2();
+    QString getHitpoints(Ship* player);
+    QString checkForWinner();
 
     bool checkCollisionShipMap(Ship *player);
     bool checkCollisionMissileMap(Missile* missile);

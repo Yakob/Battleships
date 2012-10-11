@@ -22,6 +22,7 @@ public:
     float sinRad;
     float cosMrad;
     float sinMrad;
+    int hitpoints;
 
     bool forwardKeyPressed;
     bool backwardKeyPressed;
